@@ -38,8 +38,7 @@ runs:
         cat("::group::Checking old and new versinos\n")
 
         old_version <- 
-          "GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
-          gh() |> 
+          gh("GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
           # could add fail check here
           subset2("download_url") |> 
           url() |> 
