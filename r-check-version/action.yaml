@@ -1,6 +1,11 @@
 name: 'r-check-version'
 description: 'Action to check R that pull request has a new version in DESCRIPTION and NEWS.md'
 author: 'jmbarbone'
+inputs:
+  ignore-dev-version:
+    description: 'Ignore dev version in NEWS.md'
+    required: false
+    default: true
 
 runs:
   using: "composite"
@@ -76,7 +81,12 @@ runs:
           url() |> 
           readLines()
 
-        if (length(grep(format(old_version), news_contents))) {
+
+        ignore_news <- 
+          ${{ inputs.ignore-dev-version }} == "true" && 
+          grepl("(development version)", news_contents, fixed = TRUE) 
+
+        if (!ignore_news && length(grep(format(old_version), news_contents))) {
           res <- c(res, "NEWS.md does not contain new version")
         }
 
