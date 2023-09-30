@@ -57,7 +57,7 @@ runs:
           # could add fail check here
           subset2("download_url") |>
           url() |> 
-          readLines()
+          readLines() |>
           grep(paste("#", repo), x = _, value = TRUE) |> 
           # could add fail check here
           as.package_version()
