@@ -19,7 +19,7 @@ runs:
         res <- NULL
 
         cat("::group::Getting files\n")
-        get_pull <- gh("GET https://api.github.com/repos/${{ github.repo }}/pulls/${{ github.event.pull_request.number }}/files")
+        get_pull <- gh("GET https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files")
         files <- vapply(get_pull, subset2, NA_character_, "filename")
         cat("::endgroup::\n")
 
@@ -38,7 +38,7 @@ runs:
         cat("::group::Checking old and new versinos\n")
 
         old_version <- 
-          "GET https://api.github.com/repos/${{ github.repo }}/contents/DESCRIPTION") |> 
+          "GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
           gh() |> 
           # could add fail check here
           subset2("download_url") |> 
