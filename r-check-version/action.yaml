@@ -37,27 +37,28 @@ runs:
 
         cat("::group::Checking old and new versinos\n")
 
-        old_version <- 
-          gh("GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
+
+        desc <- 
+         gh("GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
           # could add fail check here
           subset2("download_url") |> 
           url() |> 
-          read.dcf() |> 
-          subset(, "Version") |> 
-          # could add fail check here
-          as.package_version()
+          read.dcf() 
 
-        desc_url <- 
+        repo <- desc[, "Package"]
+        old_version <- as.package_version(desc[, "Version"])
+
+        news_url <- 
           get_pull[[which(files == "NEWS.md")]] |>
           subset2("contents_url")
 
         new_version <- 
-          gh(paste("GET", desc_url)) |>
+          gh(paste("GET", news_url)) |>
           # could add fail check here
           subset2("download_url") |>
           url() |> 
-          read.dcf() |> 
-          subset(, "Version") |> 
+          readLines()
+          grep(paste("#", repo), x = _, value = TRUE) |> 
           # could add fail check here
           as.package_version()
 
