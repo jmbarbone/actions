@@ -20,6 +20,7 @@ runs:
 
         cat("::group::Getting files\n")
         get_pull <- gh("GET https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files")
+
         files <- vapply(get_pull, subset2, NA_character_, "filename")
         cat("::endgroup::\n")
 
@@ -38,7 +39,7 @@ runs:
         cat("::group::Checking DESCRIPTION\n")
 
         old_desc <- 
-         gh("GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
+          gh("GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
           # could add fail check here
           subset2("download_url") |> 
           url() |> 
@@ -48,10 +49,10 @@ runs:
         old_version <- as.package_version(old_desc[, "Version"])
 
         new_desc <- 
-          get_pull[[which(files == "DESCRIPTION")]] |>
-          subset2("contents_url") |>
-          url() |> 
-          read.dcf()
+          gh(paste("GET", get_pull[[which(files == "DESCRIPTION")]]$contents_url)) |> 
+          subset2("download_url") |>
+          url() |>
+          read.dcf() 
 
         new_repo <- new_desc[, "Package"]
 
@@ -84,9 +85,11 @@ runs:
           ${{ inputs.ignore-dev-version }} == "true" && 
           length(grep("(development version)", news_contents, fixed = TRUE))
 
+        pattern <- paste("#", new_repo, format(new_version))
+
         if (
           !ignore_news && 
-          length(grep(paste("repo", format(old_version)), news_contents), fixed = TRUE)
+            length(grep(pattern, news_contents, fixed = TRUE))
         ) {
           res <- c(res, "NEWS.md does not contain new version")
         }
