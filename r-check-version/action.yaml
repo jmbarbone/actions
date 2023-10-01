@@ -82,7 +82,7 @@ runs:
           readLines()
 
         ignore_news <- 
-          ${{ inputs.ignore-dev-version }} == "true" && 
+          "${{ inputs.ignore-dev-version }}" == "true" && 
           length(grep("(development version)", news_contents, fixed = TRUE))
 
         pattern <- paste("#", new_repo, format(new_version))
