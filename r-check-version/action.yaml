@@ -44,17 +44,22 @@ runs:
           url() |> 
           read.dcf() 
 
-        repo <- old_desc[, "Package"]
-        old_version <- as.package_version(desc[, "Version"])
+        old_repo <- old_desc[, "Package"]
+        old_version <- as.package_version(old_desc[, "Version"])
 
         new_desc <- 
           get_pull[[which(files == "DESCRIPTION")]] |>
           subset2("contents_url") |>
           url() |> 
-          read.dcf() |>
-          subset(, "Package") |>
-          # could add fail check here
-          as.package_version()
+          read.dcf()
+
+        new_repo <- new_desc[, "Package"]
+
+        if (old_repo != new_repo) {
+          res <- c(res, "Package name has changed")
+        }
+
+        new_version <- as.package_version(new_desc[, "Version"])
 
         if (new_version <= old_version) {
           res <- c(res, "Version is not incremented")
