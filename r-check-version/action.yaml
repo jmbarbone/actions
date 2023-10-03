@@ -111,10 +111,10 @@ runs:
           !ignore_news && 
             length(grep(pattern, news_contents, fixed = TRUE))
         ) {
+          cat("\u274C NEWS.md does not contain new version\n")
+        } else {
           cat("\u2714 NEWS.md contains new version\n")
           res <- c(res, "NEWS.md does not contain new version")
-        } else {
-          cat("\u274C NEWS.md does not contain new version\n")
         }
 
         cat("::endgroup::\n")
