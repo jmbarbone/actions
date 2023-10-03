@@ -24,17 +24,31 @@ runs:
         files <- vapply(get_pull, subset2, NA_character_, "filename")
         cat("::endgroup::\n")
 
+        cat("::Checking for required files\n")
+
         if ("NEWS.md" %out% files) {
+          cat("\u274C NEWS.md is missing\n")
           res <- c(res, "NEWS.md is missing")
+        } else {
+          cat("\u2714 NEWS.md found\n")
         }
 
-        if ("DESCRIPTION" %out% files ) {
+        if ("DESCRIPTION" %out% files) {
+          cat("\u274C DESCRIPTION is missing\n")
           res <- c(res, "DESCRIPTION is missing")
+        } else {
+          cat("\u2714 DESCRIPTION found\n")
         }
 
         if (!is.null(res)) {
+          cat("\u274C Not all required files found\n")
+          cat("::endgroup::\n")
           return(res)
+        } else {
+          cat("\u2714 All required files found\n")
         }
+
+        cat(::endgroup::\n")
 
         cat("::group::Checking DESCRIPTION\n")
 
@@ -57,13 +71,19 @@ runs:
         new_repo <- new_desc[, "Package"]
 
         if (old_repo != new_repo) {
+          cat("\u274C Package name has changed\n")
           res <- c(res, "Package name has changed")
+        } else {
+          cat("\u2714 Package name has not changed\n")
         }
 
         new_version <- as.package_version(new_desc[, "Version"])
 
         if (new_version <= old_version) {
+          cat("\u274C Version is not incremented\n")
           res <- c(res, "Version is not incremented")
+        } else {
+          cat("\u2714 Version is incremented\n")
         }
 
         cat("::endgroup::\n")
@@ -91,7 +111,10 @@ runs:
           !ignore_news && 
             length(grep(pattern, news_contents, fixed = TRUE))
         ) {
+          cat("\u2714 NEWS.md contains new version\n")
           res <- c(res, "NEWS.md does not contain new version")
+        } else {
+          cat("\u274C NEWS.md does not contain new version\n")
         }
 
         cat("::endgroup::\n")
