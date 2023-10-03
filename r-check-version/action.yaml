@@ -48,7 +48,7 @@ runs:
           cat("\u2714 All required files found\n")
         }
 
-        cat(::endgroup::\n")
+        cat("::endgroup::\n")
 
         cat("::group::Checking DESCRIPTION\n")
 
