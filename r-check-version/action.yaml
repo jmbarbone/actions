@@ -97,7 +97,7 @@ runs:
         cat("::endgroup::\n")
 
         if (length(res)) {
-          stop(collapse("Found the following issues", issues, sep = "\n  >> "))
+          stop(collapse("Found the following issues", res, sep = "\n  >> "))
         }
       shell: Rscript {0}
       working-directory: ${{ inputs.working-directory }}
