@@ -24,7 +24,7 @@ runs:
         files <- vapply(get_pull, subset2, NA_character_, "filename")
         cat("::endgroup::\n")
 
-        cat("::Checking for required files\n")
+        cat("::group::Checking for required files\n")
 
         if ("NEWS.md" %out% files) {
           cat("\u274C NEWS.md is missing\n")
