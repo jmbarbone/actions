@@ -43,10 +43,12 @@ runs:
         if (!is.null(res)) {
           cat("\u274C Not all required files found\n")
           cat("::endgroup::\n")
-          return(res)
-        } else {
-          cat("\u2714 All required files found\n")
+          res <- c(res, "Not all required files found")
+          # early exit because we'll encounter other errors
+          stop(collapse("Found the following issues", res, sep = "\n  >> "))
         }
+
+        cat("\u2714 All required files found\n")
 
         cat("::endgroup::\n")
 
