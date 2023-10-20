@@ -18,6 +18,13 @@ runs:
 
         res <- NULL
 
+        cat(
+          "gh:                 ", format(packageVersion("gh")), "\n",
+          "fuj:                ", format(packageVersion("fuj")), "\n",
+          "ignore-dev-version: ${{ inputs.ignore-dev-version }}\n",
+          sep = ""
+        )
+
         cat("::group::Getting files\n")
         get_pull <- gh("GET https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files")
 
@@ -104,18 +111,17 @@ runs:
           readLines()
 
         ignore_news <- 
-          "${{ inputs.ignore-dev-version }}" == "true" && 
-          length(grep("(development version)", news_contents, fixed = TRUE))
+          "${{ inputs.ignore-dev-version }}" == "true" || 
+          any(grepl("(development version)", news_contents, fixed = TRUE))
 
         pattern <- paste("#", new_repo, format(new_version))
 
-        if (
-          !ignore_news && 
-            length(grep(pattern, news_contents, fixed = TRUE))
-        ) {
-          cat("\u274C NEWS.md does not contain new version\n")
-        } else {
+        if (ignore_news) {
+          cat("\u2714 NEWS.md is ignored\n")
+        } else if (any(grepl(pattern, news_contents, fixed = TRUE)))
           cat("\u2714 NEWS.md contains new version\n")
+        } else {
+          cat("\u274C NEWS.md does not contain new version\n")
           res <- c(res, "NEWS.md does not contain new version")
         }
 
