@@ -118,7 +118,7 @@ runs:
 
         if (ignore_news) {
           cat("\u2714 NEWS.md is ignored\n")
-        } else if (any(grepl(pattern, news_contents, fixed = TRUE)))
+        } else if (any(grepl(pattern, news_contents, fixed = TRUE))) {
           cat("\u2714 NEWS.md contains new version\n")
         } else {
           cat("\u274C NEWS.md does not contain new version\n")
