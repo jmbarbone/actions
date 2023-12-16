@@ -1,0 +1,24 @@
+on:
+  pull_request:
+    branches: [main, master]
+
+name: yaml checks
+
+jobs:
+  check-r-version:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::gh, any::fuj, any::yaml
+
+      - uses: jmbarbone/actions/r-check-yaml@main
+
