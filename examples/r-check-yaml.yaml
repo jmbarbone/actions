@@ -1,8 +1,6 @@
 on:
   pull_request:
     branches: [main, master]
-    paths-ignore:
-      - '.github/**'
 
 name: yaml checks
 
