@@ -1,6 +1,8 @@
 on:
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - '.github/**'
 
 name: yaml checks
 
@@ -18,7 +20,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::gh, any::fuj, any::yaml
+          packages: any::gh, any::fuj, any::yaml
 
       - uses: jmbarbone/actions/r-check-yaml@main
 
