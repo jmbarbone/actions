@@ -19,6 +19,6 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: any::gh, any::fuj, any::yaml
+          install-pandoc: false
 
       - uses: jmbarbone/actions/r-check-yaml@main
-
