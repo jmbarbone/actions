@@ -5,7 +5,7 @@ inputs:
   ignore-dev-version:
     description: 'Ignore dev version in NEWS.md'
     required: false
-    default: true
+    default: "true"
 
 runs:
   using: "composite"
@@ -27,6 +27,12 @@ runs:
 
         cat("::group::Getting files\n")
         get_pull <- gh("GET https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files")
+
+        if (!length(get_pull)) {
+          cat("No files found\n")
+          cat("::endgroup::\n")
+          quit("no")
+        }
 
         files <- vapply(get_pull, subset2, NA_character_, "filename")
         cat("::endgroup::\n")
