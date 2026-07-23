@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 library(gh)
 library(yaml)
 library(fuj)
@@ -6,11 +7,17 @@ library(scribe)
 ca <- command_args()
 ca$add_argument("--repository")
 ca$add_argument("--pull-request-number")
+ca$add_argument("--directory", default = ".")
 args <- ca$parse()
 
 catln <- function(...) cat(..., "\n", sep = "")
 catln("::group::Getting files")
-get_pull <- gh(sprintf("GET https://api.github.com/repos/%s/pulls/%s/files", args$repository, args$pull_request_number))
+get_pull <- gh(sprintf(
+  "GET https://api.github.com/repos/%s/pulls/%s/files/%s",
+  args$repository, 
+  args$pull_request_number,
+  if (args$directory == ".") "" else args$directory
+))
 
 files <- vapply(get_pull, subset2, NA_character_, "filename")
 # files <- vap_chr(files, "filename")

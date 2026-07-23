@@ -1,15 +1,22 @@
 name: 'r-check-yaml'
 description: 'Action to check that modified yaml/yml files can be read'
 author: 'jmbarbone'
+inputs:
+  directory:
+    description: 'Directory to check for yaml/yml files'
+    required: false
+    default: "."
 
 runs:
   using: "composite"
   steps:
     - name: Check yaml
-      id: rcheckyaml
+      id: check
       run: |
-        Rscript r-check-yaml/main.R \
+        chmod +x ./r-check-yaml/main.R
+        ./r-check-yaml/main.R \
           --repository ${{ github.repository }} \
           --pull-request-number ${{ github.event.pull_request.number }}
+          --directory ${{ inputs.directory }}
       shell: sh
-      working-directory: ${{ inputs.working-directory }}
+      working-directory: ${{ github.action_path }}

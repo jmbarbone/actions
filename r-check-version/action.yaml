@@ -6,16 +6,22 @@ inputs:
     description: 'Ignore dev version in NEWS.md'
     required: false
     default: "true"
+  directory:
+    description: 'Package directory'
+    required: false
+    default: "."
 
 runs:
   using: "composite"
   steps:
-    - name: Check versions
-      id: rcheckversion
+    - name: Check version
+      id: check
       run: |
-        Rscript r-check-version/main.R \
+        chmod +x ./r-check-version/main.R
+        ./r-check-version/main.R \
           --repository ${{ github.repository }} \
           --pull-request-number ${{ github.event.pull_request.number }} \
           --ignore-dev-version ${{ inputs.ignore-dev-version }}
+          --directory ${{ inputs.directory }}
       shell: sh
-      working-directory: ${{ inputs.working-directory }}
+      working-directory: ${{ github.action_path }}
