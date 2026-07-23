@@ -5,7 +5,7 @@ library(fuj)
 
 catln <- function(...) cat(..., "\n", sep = "")
 
-ca <- command_args(scan(text = "--ignore-dev-version true", what = character()))
+ca <- command_args()
 ca$add_argument("--directory", default = ".")
 ca$add_argument("--ignore-dev-version", default = FALSE)
 ca$add_argument("--repository")
