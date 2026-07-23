@@ -17,7 +17,7 @@ runs:
     - name: Check yaml
       id: check
       run: |
-        Rscript ${{ github.action_path }}/main.R
-          --directory ${{ inputs.directory }}
+        Rscript ${{ github.action_path }}/main.R \
+          --directory ${{ inputs.directory }} \
           --pattern ${{ inputs.pattern }}
       shell: sh
