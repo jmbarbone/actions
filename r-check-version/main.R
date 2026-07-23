@@ -46,7 +46,7 @@ catln("::endgroup::")
 catln("::group::Checking DESCRIPTION")
 
 old_desc <- 
-  gh(paste("GET", "https://api.github.com/repos", args$repository, "contents/DESCRIPTION", sep = "/")) |> 
+  gh("GET", sprintf("https://api.github.com/repos/%s/contents/DESCRIPTION", args$repository)) |> 
   # could add fail check here
   subset2("download_url") |> 
   url() |> 
@@ -55,12 +55,7 @@ old_desc <-
 old_repo <- old_desc[, "Package"]
 old_version <- as.package_version(old_desc[, "Version"])
 
-new_desc <- 
-  gh(paste("GET", get_pull[[which(files == "DESCRIPTION")]]$contents_url)) |> 
-  subset2("download_url") |>
-  url() |>
-  read.dcf() 
-
+new_desc <- read.dcf("DESCRIPTION")
 new_repo <- new_desc[, "Package"]
 
 if (old_repo != new_repo) {
@@ -83,16 +78,7 @@ catln("::endgroup::")
 
 catln("::group::Checking NEWS.md")
 
-news_url <- 
-  get_pull[[which(files == "NEWS.md")]] |>
-  subset2("contents_url")
-
-news_contents <- 
-  gh(paste("GET", news_url)) |>
-  # could add fail check here
-  subset2("download_url") |>
-  url() |> 
-  readLines()
+news_contents <- readLines("NEWS.md")
 
 ignore_news <- 
   args$ignore_dev_version || 
