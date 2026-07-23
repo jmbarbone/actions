@@ -13,7 +13,7 @@ runs:
     - name: Check versions
       id: rcheckversion
       run: |
-        Rscript r-check-version.main.R \
+        Rscript r-check-version/main.R \
           --repository ${{ github.repository }} \
           --pull-request-number ${{ github.event.pull_request.number }} \
           --ignore-dev-version ${{ inputs.ignore-dev-version }}

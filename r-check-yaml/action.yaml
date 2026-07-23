@@ -8,7 +8,7 @@ runs:
     - name: Check yaml
       id: rcheckyaml
       run: |
-        Rscript r-check-yaml.main.R \
+        Rscript r-check-yaml/main.R \
           --repository ${{ github.repository }} \
           --pull-request-number ${{ github.event.pull_request.number }}
       shell: sh
