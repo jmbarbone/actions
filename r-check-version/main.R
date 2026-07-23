@@ -46,7 +46,11 @@ catln("::endgroup::")
 catln("::group::Checking DESCRIPTION")
 
 old_desc <- 
-  gh(sprintf("GET https://api.github.com/repos/%s/contents/DESCRIPTION", args$repository)) |> 
+  gh(sprintf(
+    "GET https://api.github.com/repos/%s/contents/%s/DESCRIPTION", 
+    args$repository,
+    args$directory
+  )) |> 
   # could add fail check here
   subset2("download_url") |> 
   url() |> 
