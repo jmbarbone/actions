@@ -61,7 +61,7 @@ old_desc <-
 
 old_repo <- old_desc[, "Package"]
 old_version <- as.package_version(old_desc[, "Version"])
-catln("old version: ", old_version)
+catln("old version: ", format(old_version))
 
 new_desc <- read.dcf("DESCRIPTION")
 new_repo <- new_desc[, "Package"]
@@ -76,7 +76,7 @@ if (old_repo != new_repo) {
 }
 
 new_version <- as.package_version(new_desc[, "Version"])
-catln("new version: ", new_version)
+catln("new version: ", format(new_version))
 
 if (new_version <= old_version) {
   catln("\u274C Version is not incremented")
