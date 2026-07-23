@@ -17,14 +17,8 @@ runs:
     - name: Check version
       id: check
       run: |
-        source(
-          "${{ github.action_path }}/main.R",
-          echo = TRUE,
-          max.deparse.length = Inf
-        )
-
-      shell: |
-        Rscript {0} \
-          --directory ${{ inputs.directory }} \
-          --ignore-dev-version ${{ inputs.ignore-dev-version }} \
+        Rscript ${{ github.action_path }}/main.R
+          --directory ${{ inputs.directory }}
+          --ignore-dev-version ${{ inputs.ignore-dev-version }}
           --repository ${{ github.repository }}
+      shell: sh
