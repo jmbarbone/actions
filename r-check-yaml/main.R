@@ -1,27 +1,23 @@
 #!/usr/bin/env Rscript
-library(gh)
 library(yaml)
 library(fuj)
 library(scribe)
 
 ca <- command_args()
-ca$add_argument("--repository")
-ca$add_argument("--pull-request-number")
 ca$add_argument("--directory", default = ".")
+ca$add_argument("--pattern", default = "\\.(yaml|yml)$")
 args <- ca$parse()
 
 catln <- function(...) cat(..., "\n", sep = "")
 catln("::group::Getting files")
-get_pull <- gh(sprintf(
-  "GET https://api.github.com/repos/%s/pulls/%s/files/%s",
-  args$repository, 
-  args$pull_request_number,
-  if (args$directory == ".") "" else args$directory
-))
 
-files <- vapply(get_pull, subset2, NA_character_, "filename")
-# files <- vap_chr(files, "filename")
-files <- files[tolower(tools::file_ext(files)) %in% c("yaml", "yml")]
+files <- list.files(
+  args$directory, 
+  pattern = args$pattern,
+  recursive = TRUE, 
+  full.names = TRUE, 
+  ignore.case = TRUE
+)
 catln("::endgroup::")
 
 if (length(files) == 0L) {

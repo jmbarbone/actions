@@ -6,43 +6,25 @@ library(fuj)
 catln <- function(...) cat(..., "\n", sep = "")
 
 ca <- command_args(scan(text = "--ignore-dev-version true", what = character()))
-ca$add_argument("--repository")
-ca$add_argument("--pull-request-number")
+ca$add_argument("--directory", default = ".")
 ca$add_argument("--ignore-dev-version", default = FALSE)
+ca$add_argument("--repository")
 args <- ca$parse()
 
 res <- NULL
 
-cat(
-  "gh:                 ", format(packageVersion("gh")), "\n",
-  "fuj:                ", format(packageVersion("fuj")), "\n",
-  "ignore-dev-version: ", args$ignore_dev_version, "\n",
-  sep = ""
-)
-
-catln("::group::Getting files")
-get_pull <- gh(sprintf("GET https://api.github.com/repos/%s/pulls/%s/files", args$repository, args$pull_request_number))
-
-if (!length(get_pull)) {
-  catln("No files found")
-  catln("::endgroup::")
-  quit("no")
-}
-
-files <- vapply(get_pull, subset2, NA_character_, "filename")
-# files <- vap_chr(files, "filename")
-catln("::endgroup::")
+setwd(args$directory)
 
 catln("::group::Checking for required files")
 
-if ("NEWS.md" %out% files) {
+if (!file.exists("NEWS.md")) {
   catln("\u274C NEWS.md is missing")
   res <- c(res, "NEWS.md is missing")
 } else {
   catln("\u2714 NEWS.md found")
 }
 
-if ("DESCRIPTION" %out% files) {
+if (!file.exists("DESCRIPTION")) {
   catln("\u274C DESCRIPTION is missing")
   res <- c(res, "DESCRIPTION is missing")
 } else {

@@ -2,14 +2,14 @@ name: 'r-check-version'
 description: 'Action to check R that pull request has a new version in DESCRIPTION and NEWS.md'
 author: 'jmbarbone'
 inputs:
-  ignore-dev-version:
-    description: 'Ignore dev version in NEWS.md'
-    required: false
-    default: "true"
   directory:
     description: 'Package directory'
     required: false
     default: "."
+  ignore-dev-version:
+    description: 'Ignore dev version in NEWS.md'
+    required: false
+    default: "true"
 
 runs:
   using: "composite"
@@ -19,7 +19,6 @@ runs:
       run: |
         Rscript ${{ github.action_path }}/main.R
           --repository ${{ github.repository }} \
-          --pull-request-number ${{ github.event.pull_request.number }} \
+          --directory ${{ inputs.directory }} \ 
           --ignore-dev-version ${{ inputs.ignore-dev-version }}
-          --directory ${{ inputs.directory }}
       shell: sh
