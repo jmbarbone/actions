@@ -17,7 +17,7 @@ runs:
     - name: Check version
       id: check
       run: |
-        Rscript ${{ github.action_path }}/r-check-version/main.R
+        Rscript ${{ github.action_path }}/main.R
           --repository ${{ github.repository }} \
           --pull-request-number ${{ github.event.pull_request.number }} \
           --ignore-dev-version ${{ inputs.ignore-dev-version }}
