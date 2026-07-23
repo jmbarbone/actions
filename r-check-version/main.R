@@ -2,6 +2,8 @@ library(scribe)
 library(gh)
 library(fuj)
 
+catln <- function(...) cat(..., "\n", sep = "")
+
 ca <- command_args(scan(text = "--ignore-dev-version true", what = character()))
 ca$add_argument("--repository")
 ca$add_argument("--pull-request-number")
@@ -17,47 +19,48 @@ cat(
   sep = ""
 )
 
-cat("::group::Getting files\n")
+catln("::group::Getting files")
 get_pull <- gh(sprintf("GET https://api.github.com/repos/%s/pulls/%s/files", args$repository, args$pull_request_number))
 
 if (!length(get_pull)) {
-  cat("No files found\n")
-  cat("::endgroup::\n")
+  catln("No files found")
+  catln("::endgroup::")
   quit("no")
 }
 
 files <- vapply(get_pull, subset2, NA_character_, "filename")
-cat("::endgroup::\n")
+# files <- vap_chr(files, "filename")
+catln("::endgroup::")
 
-cat("::group::Checking for required files\n")
+catln("::group::Checking for required files")
 
 if ("NEWS.md" %out% files) {
-  cat("\u274C NEWS.md is missing\n")
+  catln("\u274C NEWS.md is missing")
   res <- c(res, "NEWS.md is missing")
 } else {
-  cat("\u2714 NEWS.md found\n")
+  catln("\u2714 NEWS.md found")
 }
 
 if ("DESCRIPTION" %out% files) {
-  cat("\u274C DESCRIPTION is missing\n")
+  catln("\u274C DESCRIPTION is missing")
   res <- c(res, "DESCRIPTION is missing")
 } else {
-  cat("\u2714 DESCRIPTION found\n")
+  catln("\u2714 DESCRIPTION found")
 }
 
 if (!is.null(res)) {
-  cat("\u274C Not all required files found\n")
-  cat("::endgroup::\n")
+  catln("\u274C Not all required files found")
+  catln("::endgroup::")
   res <- c(res, "Not all required files found")
   # early exit because we'll encounter other errors
   stop(collapse("Found the following issues", res, sep = "\n  >> "))
 }
 
-cat("\u2714 All required files found\n")
+catln("\u2714 All required files found")
 
-cat("::endgroup::\n")
+catln("::endgroup::")
 
-cat("::group::Checking DESCRIPTION\n")
+catln("::group::Checking DESCRIPTION")
 
 old_desc <- 
   gh(paste("GET", "https://api.github.com/repos", args$repository, "contents/DESCRIPTION", sep = "/")) |> 
@@ -78,24 +81,24 @@ new_desc <-
 new_repo <- new_desc[, "Package"]
 
 if (old_repo != new_repo) {
-  cat("\u274C Package name has changed\n")
+  catln("\u274C Package name has changed")
   res <- c(res, "Package name has changed")
 } else {
-  cat("\u2714 Package name has not changed\n")
+  catln("\u2714 Package name has not changed")
 }
 
 new_version <- as.package_version(new_desc[, "Version"])
 
 if (new_version <= old_version) {
-  cat("\u274C Version is not incremented\n")
+  catln("\u274C Version is not incremented")
   res <- c(res, "Version is not incremented")
 } else {
-  cat("\u2714 Version is incremented\n")
+  catln("\u2714 Version is incremented")
 }
 
-cat("::endgroup::\n")
+catln("::endgroup::")
 
-cat("::group::Checking NEWS.md\n")
+catln("::group::Checking NEWS.md")
 
 news_url <- 
   get_pull[[which(files == "NEWS.md")]] |>
@@ -115,16 +118,16 @@ ignore_news <-
 pattern <- paste("#", new_repo, format(new_version))
 
 if (ignore_news) {
-  cat("\u2714 NEWS.md is ignored\n")
+  catln("\u2714 NEWS.md is ignored")
 } else if (any(grepl(pattern, news_contents, fixed = TRUE))) {
-  cat("\u2714 NEWS.md contains new version\n")
+  catln("\u2714 NEWS.md contains new version")
 } else {
-  cat("\u274C NEWS.md does not contain new version\n")
+  catln("\u274C NEWS.md does not contain new version")
   res <- c(res, "NEWS.md does not contain new version")
 }
 
-cat("::endgroup::\n")
+catln("::endgroup::")
 
-if (length(res)) {
+if (length(res) > 0L) {
   stop(collapse("Found the following issues", res, sep = "\n  >> "))
 }
