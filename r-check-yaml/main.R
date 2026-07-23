@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript
+#!/usr/bin/env -S Rscript
 
 library(yaml)
 library(fuj)

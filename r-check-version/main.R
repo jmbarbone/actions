@@ -1,4 +1,4 @@
-#!/usr/bin/env Rscript
+#!/usr/bin/env -S Rscript
 library(scribe)
 library(gh)
 library(fuj)
