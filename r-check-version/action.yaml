@@ -17,11 +17,9 @@ runs:
     - name: Check version
       id: check
       run: |
-        chmod +x ./r-check-version/main.R
-        ./r-check-version/main.R \
+        Rscript ${{ github.action_path }}/r-check-version/main.R
           --repository ${{ github.repository }} \
           --pull-request-number ${{ github.event.pull_request.number }} \
           --ignore-dev-version ${{ inputs.ignore-dev-version }}
           --directory ${{ inputs.directory }}
       shell: sh
-      working-directory: ${{ github.action_path }}
