@@ -11,6 +11,7 @@ ca$add_argument("--ignore-dev-version", default = FALSE)
 ca$add_argument("--repository")
 args <- ca$parse()
 
+print(args)
 res <- NULL
 
 setwd(args$directory)
@@ -45,12 +46,14 @@ catln("::endgroup::")
 
 catln("::group::Checking DESCRIPTION")
 
+endpoint <- sprintf(
+  "GET https://api.github.com/repos/%s/contents/%s/DESCRIPTION", 
+  args$repository,
+  args$directory
+)
+catln("reading from ", endpoint)
 old_desc <- 
-  gh(sprintf(
-    "GET https://api.github.com/repos/%s/contents/%s/DESCRIPTION", 
-    args$repository,
-    args$directory
-  )) |> 
+  gh(endpoint) |> 
   # could add fail check here
   subset2("download_url") |> 
   url() |> 
@@ -58,6 +61,7 @@ old_desc <-
 
 old_repo <- old_desc[, "Package"]
 old_version <- as.package_version(old_desc[, "Version"])
+catln("old version: ", old_version)
 
 new_desc <- read.dcf("DESCRIPTION")
 new_repo <- new_desc[, "Package"]
@@ -65,11 +69,14 @@ new_repo <- new_desc[, "Package"]
 if (old_repo != new_repo) {
   catln("\u274C Package name has changed")
   res <- c(res, "Package name has changed")
+  catln("old package: ", old_repo)
+  catln("new package: ", new_repo)
 } else {
   catln("\u2714 Package name has not changed")
 }
 
 new_version <- as.package_version(new_desc[, "Version"])
+catln("new version: ", new_version)
 
 if (new_version <= old_version) {
   catln("\u274C Version is not incremented")
