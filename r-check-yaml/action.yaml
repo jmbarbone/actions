@@ -9,7 +9,7 @@ inputs:
   pattern:
     description: 'Pattern to match yaml/yml files'
     required: false
-    default: ".*\\.(yml|yaml)$"
+    default: "\\.(yml|yaml)$"
 
 runs:
   using: "composite"
