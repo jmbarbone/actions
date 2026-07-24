@@ -23,7 +23,7 @@ catln("::endgroup::")
 
 if (length(files) == 0L) {
   catln("\u2714 No yaml files found")
-  quit(0)
+  quit(status = 0L)
 }
 
 catln("::group::Checking yaml files")
@@ -52,8 +52,7 @@ for (i in which(bad)) {
 
 if (any(bad)) {
   catln("\u274C Issues found")
-  quit(1)
+  quit(status = 1L)
 }
 
 catln("\u2714 Success")
-quit(0)
