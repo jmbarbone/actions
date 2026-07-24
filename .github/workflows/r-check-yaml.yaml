@@ -23,4 +23,4 @@ jobs:
             any::scribe
           install-pandoc: false
 
-      - uses: jmbarbone/actions/r-check-yaml@main
+      - uses: jmbarbone/actions/r-check-yaml@refresh

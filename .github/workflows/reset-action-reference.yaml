@@ -1,0 +1,31 @@
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+name: reset-action-reference.yaml
+
+jobs:
+  reset-action-reference:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: reset action reference
+        run: ./configure 
+        env:
+          BRANCH_REFERENCE: main
+      
+      - name: commit and push
+        run: |
+          git config user.name ${{ github.actor }}
+          git config user.email ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com 
+          git add .
+          git commit -m "[AUTO] Action references reset to 'main'"
+          git push origin main
+          
+
