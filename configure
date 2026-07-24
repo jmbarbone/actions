@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# copy examples/* into .github/workflows/*
+
+echo "**Running ./configure"
+
+# rm -fr .github/workflows
+mkdir -p .github/workflows
+cp -r examples/* .github/workflows/
