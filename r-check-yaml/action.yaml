@@ -19,5 +19,5 @@ runs:
       run: |
         Rscript ${{ github.action_path }}/main.R \
           --directory ${{ inputs.directory }} \
-          --pattern ${{ inputs.pattern }}
+          --pattern '${{ inputs.pattern }}'
       shell: sh

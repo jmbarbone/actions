@@ -11,7 +11,6 @@ ca$add_argument("--ignore-dev-version", default = FALSE)
 ca$add_argument("--repository", default = "jmbarbone/actions")
 args <- ca$parse()
 
-print(args)
 res <- NULL
 
 setwd(args$directory)
