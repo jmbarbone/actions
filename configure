@@ -8,8 +8,6 @@ echo "**Running ./configure"
 mkdir -p .github/workflows
 cp -r examples/* .github/workflows/
 
-# change branch name from jmbarbone/actions/<action>@<branch> to jmbarbone/actions/<action>@<current>
-
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BRANCH_REFERENCE=${BRANCH_REFERENCE:-${CURRENT_BRANCH}}
 
@@ -24,3 +22,6 @@ for act in r-check-version r-check-yaml
 do
     reset_reference "${act}"
 done
+
+echo "**Incrementing package version in DESCRIPTION"
+Rscript tools/increment-version.R
