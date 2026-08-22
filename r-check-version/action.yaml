@@ -2,6 +2,10 @@ name: 'r-check-version'
 description: 'Action to check R that pull request has a new version in DESCRIPTION and NEWS.md'
 author: 'jmbarbone'
 inputs:
+  directory:
+    description: 'Package directory'
+    required: false
+    default: "."
   ignore-dev-version:
     description: 'Ignore dev version in NEWS.md'
     required: false
@@ -10,131 +14,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Check versions
-      id: rcheckversion
+    - name: Check version
+      id: check
       run: |
-        library(gh)
-        library(fuj)
-
-        res <- NULL
-
-        cat(
-          "gh:                 ", format(packageVersion("gh")), "\n",
-          "fuj:                ", format(packageVersion("fuj")), "\n",
-          "ignore-dev-version: ${{ inputs.ignore-dev-version }}\n",
-          sep = ""
-        )
-
-        cat("::group::Getting files\n")
-        get_pull <- gh("GET https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files")
-
-        if (!length(get_pull)) {
-          cat("No files found\n")
-          cat("::endgroup::\n")
-          quit("no")
-        }
-
-        files <- vapply(get_pull, subset2, NA_character_, "filename")
-        cat("::endgroup::\n")
-
-        cat("::group::Checking for required files\n")
-
-        if ("NEWS.md" %out% files) {
-          cat("\u274C NEWS.md is missing\n")
-          res <- c(res, "NEWS.md is missing")
-        } else {
-          cat("\u2714 NEWS.md found\n")
-        }
-
-        if ("DESCRIPTION" %out% files) {
-          cat("\u274C DESCRIPTION is missing\n")
-          res <- c(res, "DESCRIPTION is missing")
-        } else {
-          cat("\u2714 DESCRIPTION found\n")
-        }
-
-        if (!is.null(res)) {
-          cat("\u274C Not all required files found\n")
-          cat("::endgroup::\n")
-          res <- c(res, "Not all required files found")
-          # early exit because we'll encounter other errors
-          stop(collapse("Found the following issues", res, sep = "\n  >> "))
-        }
-
-        cat("\u2714 All required files found\n")
-
-        cat("::endgroup::\n")
-
-        cat("::group::Checking DESCRIPTION\n")
-
-        old_desc <- 
-          gh("GET https://api.github.com/repos/${{ github.repository }}/contents/DESCRIPTION") |> 
-          # could add fail check here
-          subset2("download_url") |> 
-          url() |> 
-          read.dcf() 
-
-        old_repo <- old_desc[, "Package"]
-        old_version <- as.package_version(old_desc[, "Version"])
-
-        new_desc <- 
-          gh(paste("GET", get_pull[[which(files == "DESCRIPTION")]]$contents_url)) |> 
-          subset2("download_url") |>
-          url() |>
-          read.dcf() 
-
-        new_repo <- new_desc[, "Package"]
-
-        if (old_repo != new_repo) {
-          cat("\u274C Package name has changed\n")
-          res <- c(res, "Package name has changed")
-        } else {
-          cat("\u2714 Package name has not changed\n")
-        }
-
-        new_version <- as.package_version(new_desc[, "Version"])
-
-        if (new_version <= old_version) {
-          cat("\u274C Version is not incremented\n")
-          res <- c(res, "Version is not incremented")
-        } else {
-          cat("\u2714 Version is incremented\n")
-        }
-
-        cat("::endgroup::\n")
-
-        cat("::group::Checking NEWS.md\n")
-
-        news_url <- 
-          get_pull[[which(files == "NEWS.md")]] |>
-          subset2("contents_url")
-
-        news_contents <- 
-          gh(paste("GET", news_url)) |>
-          # could add fail check here
-          subset2("download_url") |>
-          url() |> 
-          readLines()
-
-        ignore_news <- 
-          "${{ inputs.ignore-dev-version }}" == "true" || 
-          any(grepl("(development version)", news_contents, fixed = TRUE))
-
-        pattern <- paste("#", new_repo, format(new_version))
-
-        if (ignore_news) {
-          cat("\u2714 NEWS.md is ignored\n")
-        } else if (any(grepl(pattern, news_contents, fixed = TRUE))) {
-          cat("\u2714 NEWS.md contains new version\n")
-        } else {
-          cat("\u274C NEWS.md does not contain new version\n")
-          res <- c(res, "NEWS.md does not contain new version")
-        }
-
-        cat("::endgroup::\n")
-
-        if (length(res)) {
-          stop(collapse("Found the following issues", res, sep = "\n  >> "))
-        }
-      shell: Rscript {0}
-      working-directory: ${{ inputs.working-directory }}
+        Rscript ${{ github.action_path }}/main.R \
+          --directory ${{ inputs.directory }} \
+          --ignore-dev-version ${{ inputs.ignore-dev-version }} \
+          --repository ${{ github.repository }}
+      shell: sh

@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+# copy examples/* into .github/workflows/*
+
+echo "**Running ./configure"
+
+# rm -fr .github/workflows
+mkdir -p .github/workflows
+cp -r examples/* .github/workflows/
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+BRANCH_REFERENCE=${BRANCH_REFERENCE:-${CURRENT_BRANCH}}
+
+reset_reference() {
+    action=$1
+    file=.github/workflows/${action}.yaml
+    echo "**Resetting action reference for '${action}' in '${file}' to branch '${BRANCH_REFERENCE}'"
+    sed -i "s/jmbarbone\/actions\/${action}@.*/jmbarbone\/actions\/${action}@${BRANCH_REFERENCE}/g" "${file}"
+}
+
+for act in r-check-version r-check-yaml
+do
+    reset_reference "${act}"
+done
+
+echo "**Incrementing package version in DESCRIPTION"
+Rscript tools/increment-version.R

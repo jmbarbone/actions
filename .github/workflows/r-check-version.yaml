@@ -1,8 +1,10 @@
 on:
   pull_request:
     branches: [main, master]
+    paths-ignore:
+      - '.github/**'
 
-name: r-check-yaml.yaml
+name: r-check-version.yaml
 
 jobs:
   check-r-version:
@@ -10,7 +12,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
 
@@ -19,8 +21,9 @@ jobs:
           packages: |
             any::gh
             any::fuj
-            any::yaml
             any::scribe
           install-pandoc: false
 
-      - uses: jmbarbone/actions/r-check-yaml@main
+      - uses: jmbarbone/actions/r-check-version@refresh
+        with:
+          ignore-dev-version: true
